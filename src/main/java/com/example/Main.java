@@ -65,10 +65,11 @@ public class Main {
         System.out.println("1. Зашифрувати");
         System.out.println("2. Стиснути");
         System.out.println("3. Додати водяний знак");
+        System.out.println("4. Розшифрувати документ");
         System.out.print("Виберіть декоратор: ");
 
         int choice = scanner.nextInt();
-        scanner.nextLine();
+        scanner.nextLine(); // очищення буфера
 
         switch (choice) {
             case 1:
@@ -85,10 +86,19 @@ public class Main {
                 currentDocument = new WatermarkedDocument(currentDocument, watermark);
                 System.out.println("Водяний знак додано.");
                 break;
+            case 4:
+                try {
+                    String decryptedContent = EncryptedDocument.decrypt(currentDocument.getContent());
+                    System.out.println("Розшифрований текст: " + decryptedContent);
+                } catch (Exception e) {
+                    System.out.println("Помилка розшифрування: " + e.getMessage());
+                }
+                break;
             default:
                 System.out.println("Невірний вибір.");
         }
     }
+
 
     private static void changeDocumentState() {
         if (currentDocument == null) {

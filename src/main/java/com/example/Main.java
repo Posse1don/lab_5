@@ -1,14 +1,13 @@
 package com.example;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
     private static final String FILES_DIRECTORY = "files";
     private static FileDocument currentFileDocument;
     private static Document currentDocument;
-    private static DocumentLifecycle currentLifecycle; // Унікальний стан для кожного документа
+    private static DocumentLifecycle currentLifecycle;
 
     public static void main(String[] args) {
         ensureFilesDirectoryExists();
@@ -18,9 +17,7 @@ public class Main {
 
     private static void ensureFilesDirectoryExists() {
         File directory = new File(FILES_DIRECTORY);
-        if (!directory.exists()) {
-            directory.mkdir();
-        }
+        if (!directory.exists()) directory.mkdir();
     }
 
     private static void mainMenu(Scanner scanner) {
@@ -32,7 +29,7 @@ public class Main {
             System.out.print("Ваш вибір: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // очищення буфера
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> selectFile(scanner);
@@ -71,7 +68,7 @@ public class Main {
 
         currentFileDocument = new FileDocument(files[choice - 1].getPath());
         currentDocument = currentFileDocument;
-        currentLifecycle = new DocumentLifecycle(); // Ініціалізуємо новий стан для нового документа
+        currentLifecycle = new DocumentLifecycle();
         System.out.println("Файл обрано: " + files[choice - 1].getName());
     }
 
@@ -86,9 +83,8 @@ public class Main {
             System.out.println("1. Переглянути вміст файлу");
             System.out.println("2. Застосувати декоратор");
             System.out.println("3. Змінити стан документа");
-            System.out.println("4. Зберегти зміни у файл");
-            System.out.println("5. Інформація про файл");
-            System.out.println("6. Повернутися до головного меню");
+            System.out.println("4. Інформація про файл");
+            System.out.println("5. Повернутися до головного меню");
             System.out.print("Ваш вибір: ");
 
             int choice = scanner.nextInt();
@@ -98,16 +94,14 @@ public class Main {
                 case 1 -> showFileContent();
                 case 2 -> applyDecorator(scanner);
                 case 3 -> manageLifecycle(scanner);
-                case 4 -> saveFileChanges();
-                case 5 -> showFileInfo();
-                case 6 -> {
+                case 4 -> showFileInfo();
+                case 5 -> {
                     return;
                 }
                 default -> System.out.println("Невірний вибір.");
             }
         }
     }
-
 
     private static void showFileContent() {
         System.out.println("\n--- Вміст файлу ---");
@@ -119,7 +113,6 @@ public class Main {
         System.out.println("1. Зашифрувати документ");
         System.out.println("2. Стиснути документ");
         System.out.println("3. Додати водяний знак");
-        System.out.println("4. Дешифрувати документ");
         System.out.print("Ваш вибір: ");
 
         int choice = scanner.nextInt();
@@ -133,31 +126,12 @@ public class Main {
                 String watermark = scanner.nextLine();
                 currentDocument = new WatermarkedDocument(currentDocument, watermark);
             }
-            case 4 -> decryptDocument();
             default -> System.out.println("Невірний вибір.");
         }
 
-        if (choice != 4) {
-            System.out.println("Декоратор застосовано.");
-        }
+        saveFileChanges(); // Автоматичне збереження
+        System.out.println("Зміни застосовано та збережено.");
     }
-
-    private static void decryptDocument() {
-        if (!(currentDocument instanceof EncryptedDocument)) {
-            System.out.println("Поточний документ не є зашифрованим.");
-            return;
-        }
-
-        try {
-            String encryptedContent = currentDocument.getContent();
-            String decryptedContent = EncryptedDocument.decrypt(encryptedContent);
-            currentDocument = new TextDocument(decryptedContent);
-            System.out.println("Документ успішно дешифровано.");
-        } catch (Exception e) {
-            System.out.println("Помилка дешифрування: " + e.getMessage());
-        }
-    }
-
 
     private static void manageLifecycle(Scanner scanner) {
         if (currentLifecycle == null) {
@@ -191,15 +165,6 @@ public class Main {
         }
     }
 
-//    private static void saveLifecycleState() {
-//        if (currentDocument instanceof FileDocument fileDocument) {
-//            String newContent = currentDocument.getContent()
-//                    + "\n[Стан документа: " + documentLifecycle.getCurrentState() + "]";
-//            fileDocument.saveContent(newContent);
-//            System.out.println("Стан документа збережено у файл.");
-//        }
-//    }
-
     private static void saveFileChanges() {
         if (currentFileDocument == null || currentDocument == null) {
             System.out.println("Файл або документ не завантажено.");
@@ -207,20 +172,16 @@ public class Main {
         }
 
         currentFileDocument.saveContent(currentDocument.getContent());
-        System.out.println("Зміни збережено у файл: " + currentFileDocument.getFilePath());
     }
 
     private static void showFileInfo() {
         System.out.println("\n--- Інформація про файл ---");
-
-        // Виводимо поточний стан документа
         if (currentLifecycle != null) {
             System.out.println("Поточний стан документа: " + currentLifecycle.getCurrentState());
         } else {
             System.out.println("Стан документа не ініціалізовано.");
         }
 
-        // Виводимо застосовані декоратори
         System.out.println("Застосовані декоратори:");
         Document tempDocument = currentDocument;
         while (tempDocument instanceof DocumentDecorator decorator) {
@@ -238,5 +199,4 @@ public class Main {
             System.out.println("Шлях до файлу: " + fileDocument.getFilePath());
         }
     }
-
 }

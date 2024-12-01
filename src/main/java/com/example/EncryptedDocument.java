@@ -39,12 +39,4 @@ public class EncryptedDocument extends DocumentDecorator {
         byte[] encryptedBytes = cipher.doFinal(content.getBytes());
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
-
-    public static String decrypt(String encryptedContent) throws Exception {
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        byte[] decodedBytes = Base64.getDecoder().decode(encryptedContent);
-        byte[] originalBytes = cipher.doFinal(decodedBytes);
-        return new String(originalBytes);
-    }
 }

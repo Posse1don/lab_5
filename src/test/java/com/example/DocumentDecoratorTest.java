@@ -12,9 +12,6 @@ public class DocumentDecoratorTest {
         String encryptedContent = encrypted.getContent();
         assertNotEquals("Sample content.", encryptedContent, "Зашифрований текст не повинен збігатися з оригіналом.");
 
-        String decryptedContent = EncryptedDocument.decrypt(encryptedContent);
-        assertEquals("Sample content.", decryptedContent, "Розшифрований текст має відповідати оригіналу.");
-
         Document compressed = new CompressedDocument(encrypted);
         String compressedContent = compressed.getContent();
         assertTrue(compressedContent.startsWith("Compressed("), "Стиснутий текст має починатися зі слова 'Compressed'.");

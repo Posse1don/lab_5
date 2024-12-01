@@ -12,4 +12,9 @@ public class WatermarkedDocument extends DocumentDecorator {
     public String getContent() {
         return document.getContent() + " [Watermark: " + watermark + "]";
     }
+
+    public String getWatermark() {
+        return watermark;
+    }
 }
+
